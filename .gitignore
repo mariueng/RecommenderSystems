@@ -3,3 +3,6 @@ active1000
 
 # MAC OS
 .DS_Store
+
+# Python
+__pycache__
