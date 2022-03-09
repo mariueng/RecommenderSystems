@@ -1,8 +1,12 @@
 # Data files
 active1000
+/data/
 
 # MAC OS
 .DS_Store
 
 # Python
 __pycache__
+
+# Jupyter
+.ipynb_checkpoints/
