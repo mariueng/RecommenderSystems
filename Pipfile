@@ -11,6 +11,7 @@ numpy = "*"
 seaborn = "*"
 implicit = "*"
 fuzzywuzzy = "*"
+nltk = "*"
 
 [dev-packages]
 ipykernel = "*"

@@ -88,13 +88,13 @@ class ExplicitMF():
                 predictions[u,i] = self.user_vecs[u,:].dot(self.item_vecs[i, :].T)
         
         return predictions
-    
+
     def get_mse(self, pred, actual):
         """Calculate mean squard error between actual ratings and predictions"""
         pred = pred[actual.nonzero()].flatten()
         actual = actual[actual.nonzero()].flatten()
         return mean_squared_error(pred, actual)
-                
+
     def calculate_learning_curve(self, iter_array, test):
         """
         Keep track of MSE during train and test iterations.
