@@ -14,7 +14,7 @@ def load_events(path):
         if os.path.isfile(file_name):
             for line in open(file_name):
                 obj = json.loads(line.strip())
-                if not obj is None:
+                if obj is not None:
                     map_lst.append(obj)
     return pd.DataFrame(map_lst)
 
