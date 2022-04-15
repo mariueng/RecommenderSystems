@@ -13,7 +13,7 @@ from nltk.tokenize import RegexpTokenizer
 def make_lower_case(text):
     try:
         return text.lower()
-    except:
+    except AttributeError:
         return ""
 
 def remove_stop_words(text):

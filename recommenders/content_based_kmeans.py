@@ -137,41 +137,4 @@ def cb_kmeans_pipeline(user, k, users_df, items_df, events_df):
 
     train_score, test_score = model.evaluate(train, test)
 
-    return model, rec_df, test_score, train_score
-
-
-
-if __name__ == '__main__':
-    # Ignore warnings from sklearn np.matrix
-    import warnings
-    warnings.filterwarnings("ignore")
-
-    # Test, not to be submitted
-
-    # Load data
-    users_ = pre_processing(pd.read_csv(PATH + 'users.csv'))
-    events_ = pd.read_csv(PATH + 'events.csv')
-    articles_ = pd.read_csv(PATH + 'articles.csv')
-
-    # Instantiate model
-    model = KMeansCB(users=users_,
-                     articles=articles_,
-                     events=events_,
-                     batch_size=10,
-                     n_clusters=5)
-
-    # Train model
-    model.fit()
-
-    # Predict
-    predictions = model.predict(users_.iloc[[301]], 10)
-    print('Predictions:')
-    print(predictions)
-
-    # Evaluate
-    train = users_.sample(frac=0.75)
-    test = users_.drop(train.index)
-
-    train_score, test_score = model.evaluate(train, test)
-    print(f'Train score: {train_score}')
-    print(f'Test score: {test_score}')
+    return model, rec_df, test_score

@@ -42,17 +42,17 @@ class ExplicitMF():
         """
         if type == 'user':
             YTY = fixed_vecs.T.dot(fixed_vecs)
-            lambdaI = np.eye(YTY.shape[0]) * _lambda
+            lambda_i = np.eye(YTY.shape[0]) * _lambda
             
             for u in range(latent_vectors.shape[0]):
-                latent_vectors[u,:] = solve((YTY + lambdaI),
+                latent_vectors[u,:] = solve((YTY + lambda_i),
                               ratings[u,:].dot(fixed_vecs))
         elif type == 'item':
             XTX = fixed_vecs.T.dot(fixed_vecs)
-            lambdaI = np.eye(XTX.shape[0]) * _lambda
+            lambda_i = np.eye(XTX.shape[0]) * _lambda
             
             for i in range(latent_vectors.shape[0]):
-                latent_vectors[i,:] = solve((XTX + lambdaI),
+                latent_vectors[i,:] = solve((XTX + lambda_i),
                               ratings[:,i].T.dot(fixed_vecs))
                 
         return latent_vectors

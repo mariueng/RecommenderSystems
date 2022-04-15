@@ -30,3 +30,5 @@ NB! You might have to set a kernel for the jupyter notebooks as well manually.
 To be able to run the content-based article recommender model you first need to download an NLTK package. After installing the nltk package in your environment, start a python environment and type the following:
 
 `nltk.download("stopwords")`
+
+See [nltk.org](https://www.nltk.org/) for more information.

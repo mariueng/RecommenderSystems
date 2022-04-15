@@ -152,19 +152,17 @@ class CFModel:
         """ Single user and item prediction. """
         return self.user_vecs[u, :].dot(self.item_vecs[i, :].T)
     
-    def evaluate(self, pred, actual, k):
+    def evaluate(self, pred, actual):
         """Evaluate recommendations according to recall@k and ARHR@k"""
         total_num = len(actual)
         tp = 0.
         arhr = 0.
-        for p, t in zip(pred, actual):
-            if t in p:
+        for pred_val in pred:
+            if pred_val in actual:
                 tp += 1.
-                arhr += 1./float(p.index(t) + 1.)
+                arhr += 1./(np.argwhere(actual == pred_val).flatten()[0] + 1.)
         recall = tp / float(total_num)
         arhr = arhr / len(actual)
-        print("Recall@{} is {:.4f}".format(k, recall))
-        print("ARHR@{} is {:.4f}".format(k, arhr))
 
         return recall, arhr
 
@@ -203,6 +201,8 @@ class CFModel:
                 print("Train mse: {}".format(str(self.train_mse[-1])))
                 print("Test mse: {}".format(str(self.test_mse[-1])))
             iter_diff = n_iter
+        
+        return predictions
 
 
 # Methods to retrieve recommended articles for a single user
@@ -211,7 +211,7 @@ def user_cosine_similarity(model):
     norms = np.array([np.sqrt(np.diagonal(sim))])
     return sim / norms / norms.T
 
-def display_top_k_articles(user, similarity, mapper, df_ext, k, model):
+def retrieve_top_k_articles(user, similarity, mapper, df_ext, k, model):
     # Indexes of cosine similarity matrix matches user ids
     if isinstance(user, int):
         # uid input, use direct lookup
@@ -248,12 +248,12 @@ def cf_pipeline(user, k, events_df):
     # Pre-process data
     events = pre_processing(events_df)
 
-    """ Optimal params for ExplicitMF
-    {'n_factors': 5,
+    """
+    Optimal params for Implicit Collaborative Filtering using Matrix Factorization:
+
+    'n_factors': 5,
     'reg': 0.01,
     'n_iter': 100,
-    'train_mse': 0.0070605027498709064,
-    'test_mse': 0.007374371269504115,
     """
 
     # Prepare data and create ratings matrix
@@ -273,7 +273,7 @@ def cf_pipeline(user, k, events_df):
     # Display top 10 articles for a user
     als_user_sim = user_cosine_similarity(model)
 
-    recommendations = display_top_k_articles(user, als_user_sim, mapper, df_ext, k, model)
+    recommendations = retrieve_top_k_articles(user, als_user_sim, mapper, df_ext, k, model)
     titles = []
     document_ids = []
     for article in recommendations:
@@ -284,9 +284,17 @@ def cf_pipeline(user, k, events_df):
     rec_df = pd.DataFrame(list(zip(titles, document_ids)), columns =['title', 'documentId'])
 
     # Evaluation
-    train_mse = model.train_mse
-    test_mse = model.test_mse
+    # Is done between predicted and actual articles from the test set
+    # Find true article ids (tid) the user read based on test set
+    ## Get tid from test matrix argmax and use events to match with userId, if the article exists
+    tids = np.unravel_index(np.argsort(test.ravel())[-10:], test.shape)[1]
+    # Retrieve true articles from mapper
+    test_articles = mapper[(mapper['userId'] == user) & (mapper['tid'].isin(tids))]['documentId'].values
+
+    evaluate = model.evaluate(pred=document_ids, actual=test_articles.tolist())
+
+    scores = {'mse': model.test_mse[-1], 'recall': evaluate[0], 'arhr': evaluate[1]}
 
     print('Done!')
 
-    return model, rec_df, test_mse, train_mse
+    return model, rec_df, scores
