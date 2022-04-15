@@ -132,15 +132,21 @@ def cb_articles_pipeline(user, k, users_df, items_df, events_df):
     recommended_indices = cb.predict(article_indices, k, with_score=True)
 
     # Convert indices to articles
-    recommended_articles = items_df[items_df.index.isin([x[0] for x in recommended_indices])].values
-    print('Content based articles recommendation:')
-    print('Title | Document id')
-    for rec in recommended_articles:
-        print(f'{rec[1]} | {rec[0]}')
+    recommendations = items_df[items_df.index.isin([x[0] for x in recommended_indices])].values
+
+    # Convert to dataframe
+    titles = []
+    document_ids = []
+    for article in recommendations:
+        title = article[1]
+        document_id = article[0]
+        titles.append(title)
+        document_ids.append(document_id)
+    rec_df = pd.DataFrame(list(zip(titles, document_ids)), columns =['title', 'documentId'])
 
     # Evaluate
     eval_ = cb.evaluate(users_df, events_df, batch_size=10)
 
-    print('Content based articles recommender evaluation:')
-    print(eval_)
-    return recommended_articles, eval_
+    print('Done!')
+
+    return cb, rec_df, eval_

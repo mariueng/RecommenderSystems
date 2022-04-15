@@ -119,22 +119,25 @@ def cb_kmeans_pipeline(user, k, users_df, items_df, events_df):
 
     # Predict
     recommended_indices = model.predict(user, k).values
-    recommended_articles = items_df[items_df.index.isin(recommended_indices)].values
-    print('Content-based KMeans recommendation:')
-    print('Title | Document id')
-    for rec in recommended_articles:
-        print(f'{rec[1]} | {rec[0]}')
+    recommendations = items_df[items_df.index.isin(recommended_indices)].values
+
+    # Convert to dataframe
+    titles = []
+    document_ids = []
+    for article in recommendations:
+        title = article[1]
+        document_id = article[0]
+        titles.append(title)
+        document_ids.append(document_id)
+    rec_df = pd.DataFrame(list(zip(titles, document_ids)), columns =['title', 'documentId'])
 
     # Evaluate
     train = users_df.sample(frac=0.8)
     test = users_df.drop(train.index)
 
     train_score, test_score = model.evaluate(train, test)
-    print('Evaluation of Content-based K-means:')
-    print(f'Train score: {train_score}')
-    print(f'Test score: {test_score}')
 
-    return recommended_articles, test_score
+    return model, rec_df, test_score, train_score
 
 
 

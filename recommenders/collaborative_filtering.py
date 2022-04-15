@@ -231,7 +231,6 @@ def display_top_k_articles(user, similarity, mapper, df_ext, k, model):
     for i in range(1, k + 1):
         # Get the index in the rating matrix for the item in question
         user_id = top_10_similar_user_ids[i]
-        # print(user_id)
         article_id = np.argmax(model.ratings[user_id])
         top_10_article_ids.append(article_id)
 
@@ -239,8 +238,7 @@ def display_top_k_articles(user, similarity, mapper, df_ext, k, model):
     # Translate to title using df_ext
     for tid in top_10_article_ids:
         article = mapper[mapper['tid'] == tid].head(1)
-        recommended_articles.append(article.values[0]) # TODO: Fix array/list problem
-        # print(article['title'])
+        recommended_articles.append(article.values[0])
 
     return recommended_articles
 
@@ -276,16 +274,19 @@ def cf_pipeline(user, k, events_df):
     als_user_sim = user_cosine_similarity(model)
 
     recommendations = display_top_k_articles(user, als_user_sim, mapper, df_ext, k, model)
-    print('Predictions from collaborative filtering:')
-    print('Title | Document id')
+    titles = []
+    document_ids = []
     for article in recommendations:
-        print(f'{article[3]} | {article[8]}')
+        title = article[3]
+        document_id = article[8]
+        titles.append(title)
+        document_ids.append(document_id)
+    rec_df = pd.DataFrame(list(zip(titles, document_ids)), columns =['title', 'documentId'])
 
     # Evaluation
     train_mse = model.train_mse
     test_mse = model.test_mse
-    print('Evaluation of collaborative filtering model: ')
-    print(f'Train mse: {train_mse}')
-    print(f'Test mse: {test_mse}')
 
-    return recommendations, test_mse
+    print('Done!')
+
+    return model, rec_df, test_mse, train_mse

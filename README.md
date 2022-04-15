@@ -1,14 +1,10 @@
-# tdt4215-22
+# TDT4215 Group Project Spring 2022
 
-Here you can find the detailed description of the group project requirements for TDT4215 Recommender Systems.
+This repository contains the code for group 10 for the course TDT4215 Recommender Systems at IDI, NTNU.
 
-Original project authors are Lemei Zhang and Peng Liu.
+To git started, please setup your local environment following the instructions below and go to the **main.ipynb** notebook to run the models.
 
-Explicit Matrix Factorization implementation is based on the [blog](https://www.ethanrosenthal.com/2016/01/09/explicit-matrix-factorization-sgd-als/) by Ethan Rosenthal.
-
-Start by looking at the **project_description.ipynb**, and then you can also take a look at the .py scripts if you're interested.
-
-Good luck!
+NB! Data used in the models have been preprocessed and hence making it difficult to automatically run the models from the original dataset. To download the preprocessed datasets, please visit [this drive][https://drive.google.com/drive/folders/1osf88CZsjEeatSWAjds0xZShTG4HZNwC?usp=sharing].
 
 ## Setup
 
@@ -21,6 +17,16 @@ To get started using pipenv you just have to install pipenv and run
 
 `pipenv shell`
 
+followeb by
+
+`pipenv install`
+
 Ensure the correct interpreter is selected in your IDE and you should be ready to go.
 
 NB! You might have to set a kernel for the jupyter notebooks as well manually.
+
+### Other packages
+
+To be able to run the content-based article recommender model you first need to download an NLTK package. After installing the nltk package in your environment, start a python environment and type the following:
+
+`nltk.download("stopwords")`
